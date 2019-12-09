@@ -1,0 +1,39 @@
+
+    
+HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop pyspark --master yarn --deploy-mode client
+
+8.8
+cp /usr/local/spark/conf/spark-env.sh.template /usr/local/spark/conf/spark-env.sh
+
+sudo gedit /usr/local/spark/conf/spark-env.sh
+
+export SPARK_MASTER_IP=master
+export SPARK_WORKER_CORES=1
+export SPARK_WORKER_MEMORY=512m
+export SPARK_WORKER_INSTANCES=4
+
+sudo mkdir /usr/local/spark
+sudo chown hduser:hduser /usr/local/spark
+sudo scp -r /usr/local/spark hduser@data1:/usr/local  (这块报错，因为hduser可以免密ssh，sudo不可以，所以命令不加sudo)
+
+sudo gedit /usr/local/spark/conf/slaves
+
+ pyspark --master spark://master:7077 --num-executors 1 --total-executor-cores 3 --executor-memory 512m
+
+bash Anaconda2*.sh -b
+sudo vim ~/.bashrc
+export PATH=/home/hduser/anaconda2/bin:$PATH
+export ANACONDA_PATH=/home/hduser/anaconda2
+
+export PYSPARK_DRIVER_PYTHON=$ANACONDA_PATH/bin/ipython
+export PYSPARK_PYTHON=$ANACONDA_PATH/bin/python
+
+mkdir -p ~/pythonwork/ipynotebook 
+cd ~/pythonwork/ipynotebook 
+PYSPARK_DRIVER_PYTHON=ipython PYSPARK_DRIVER_PYTHON_OPTS="notebook" pyspark
+
+PYSPARK_DRIVER_PYTHON=ipython PYSPARK_DRIVER_PYTHON_OPTS="notebook" HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop MASTER=yarn-client pyspark
+
+PYSPARK_DRIVER_PYTHON=ipython PYSPARK_DRIVER_PYTHON_OPTS="notebook" HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop pyspark --master yarn --deploy-mode client 
+
+
