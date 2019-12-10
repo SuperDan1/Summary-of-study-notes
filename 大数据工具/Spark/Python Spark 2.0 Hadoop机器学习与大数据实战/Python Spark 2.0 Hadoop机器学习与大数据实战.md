@@ -8,6 +8,15 @@ typora-copy-images-to: pic
 
 # Python Spark机器学习与Hadoop大数据
 
+## 机器学习的介绍
+
+![1575903133581](pic/1575903133581.png)
+
+<center>机器学习程序的运行架构</center>
+## Spark的框架
+
+
+
 # Vmware Workstation安装Ubuntu18.04LTS
 
 * [Vmware Workstation优化设置](https://blog.csdn.net/weixin_44003528/article/details/90477484)
@@ -182,14 +191,18 @@ sudo mv hadoop* /usr/local/hadoop
   
   * 常用目录说明
   
-    ![1575345955323](pic/1575345955323.png)
+    * `bin/`：各项运行文件，包括`Hadoop`、`HDFS`、`YARN`等
+    * `sbin/`：各项`shell`运行文件，包括`start-all.sh`、`stop-all.sh`
+    * `etc/`：`etc/hadoop`子目录包含`Hadoop`配置文件，例如`hadoop-env.sh`、`core-size.xml`、`YARN-site.xml`、`mapred-site.xml`、`hdfs-site.xml`
+    * `lib/`：`Hadoop`函数库
+    * `logs/`：系统日志，可以查看系统运行状况，运行有问题时可从日志找出错误原因
   
 * 设置Hadoop环境变量
 
   * 编辑`~/.bashrc`
 
     ```bash
-    sudo gedit ~/.bashrc
+    sudo vim ~/.bashrc
     ```
 
   * 在末尾添加
@@ -232,7 +245,7 @@ sudo mv hadoop* /usr/local/hadoop
     * 编辑`hadoop-env.sh`
 
       ```bash
-      sudo gedit /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+      sudo vim /usr/local/hadoop/etc/hadoop/hadoop-env.sh
       ```
 
     * 将原文件中`export JAVA_HOME=${JAVA_HOME}`修改为:
@@ -247,10 +260,10 @@ sudo mv hadoop* /usr/local/hadoop
     * 编辑`core-site.xml`
       
       ```bash
-      sudo gedit /usr/local/hadoop/etc/hadoop/core-site.xml
+      sudo vim /usr/local/hadoop/etc/hadoop/core-site.xml
       ```
   
-    * 在之间，输入下列內容：设置HDFS的默认名称
+    * 在之间，输入下列內容：设置HDFS的默认名称——当使用命令或程序要存取`HDFS`时，可以使用此名称
   
       ```xml
       <property>
@@ -264,7 +277,7 @@ sudo mv hadoop* /usr/local/hadoop
     * 编辑`yarn-site.xml`
     
       ```bash
-      sudo gedit /usr/local/hadoop/etc/hadoop/yarn-site.xml
+      sudo vim /usr/local/hadoop/etc/hadoop/yarn-site.xml
       ```
   
     * 在之间，输入下列內容:
@@ -286,7 +299,7 @@ sudo mv hadoop* /usr/local/hadoop
   
       ```bash
       sudo cp /usr/local/hadoop/etc/hadoop/mapred-site.xml.template /usr/local/hadoop/etc/hadoop/mapred-site.xml
-      sudo gedit /usr/local/hadoop/etc/hadoop/mapred-site.xml
+      sudo vim /usr/local/hadoop/etc/hadoop/mapred-site.xml
       ```
     * 在之间，输入下列內容：设置MapReduce的框架为yarn
       ```xml
@@ -296,7 +309,7 @@ sudo mv hadoop* /usr/local/hadoop
       </property>
       ```
 
-  * 设置`hdfs-site.xml`
+  * 设置`hdfs-site.xml`：用于设置`HDFS`分布式文件系统
   
     * 编辑`hdfs-site.xml`
 
@@ -358,6 +371,7 @@ sudo mv hadoop* /usr/local/hadoop
     ```bash
     # YARN相关进程：ResourceManager、NodeManager
     # HDFS相关进程：DataNode、NameNode、SecondaryNameNode
+    # jps(Java Virtual Machine Process Status Tool)，可以查看当前所运行的进程（process）
     jps
     ```
 
@@ -387,40 +401,67 @@ sudo mv hadoop* /usr/local/hadoop
 
   ![1575353029810](pic/1575353029810.png)
 
-![1575362320378](pic/1575362320378.png)
+## 安装配置
 
-5.1.複製Single Node Cluster到data1
+### 将`Single Node Cluster`复制到`data1`
 
-5.2.設定data1伺服器Step2.編輯網路設定檔設定固定IP:将ens改为eth https://blog.csdn.net/lzandwss/article/details/79471752
+* 完全复制
 
-```
-sudo gedit /etc/network/interfaces
-```
+  ![1575905042580](pic/1575905042580.png)
 
-輸入下列內容
+* 设置网卡
 
-```bash
-# NAT interface
-auto ens32 
-iface ens32 inet dhcp
+  * 网络连接方案
 
-# host only interface
-auto ens35 
-iface ens35 inet static 
-address 192.168.56.101 
-netmask 255.255.255.0 
-network 192.168.56.0 
-broadcast
-```
+    * 最右边是`Host`主机，就是我们安装虚拟机的主机
 
-Step3.設定hostname
+    * 在每一台虚拟机上设置2张网卡
 
-```
-sudo gedit /etc/hostname
-```
+      * 网卡1：设置为`NAT`网卡，可以通过`Host`主机连接到外部网络
+      * 网卡2：设置为仅主机适配器，用于创建内部网络——内部网络连接虚拟机（`master`、`data1`、`data2`、`data3`）与`Host`主机
 
-輸入下列內容:
-Step4.設定hosts檔案
+      ![1575905306257](pic/1575905306257.png)
+
+  * 具体设置
+
+    ![1575362320378](pic/1575362320378.png)
+
+
+
+### 设定data1服务器
+
+* 将ens改为eth https://blog.csdn.net/lzandwss/article/details/79471752
+* 编辑网络配置文件设置固定`IP`
+  
+  * 编辑`interfaces`网络配置文件
+  
+    ```bash
+    sudo vim /etc/network/interfaces
+    ```
+  
+  * 輸入下列內容
+  
+    ```bash
+    # NAT interface
+    auto eth0 
+    iface eth0 inet dhcp
+    
+    # host only interface
+    auto eth1 
+    iface eth1 inet static 
+    address      192.168.56.101 
+    netmask      255.255.255.0 
+    network      192.168.56.0 
+    broadcast    192.168.56.255
+    ```
+
+* 设定`hostname`：在其中输入`data1`
+
+  ```bash
+  sudo vim /etc/hostname
+  ```
+
+* 设置 `hosts`文件
 
 ```
 sudo gedit /etc/hosts
