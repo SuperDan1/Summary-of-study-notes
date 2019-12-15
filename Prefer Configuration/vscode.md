@@ -3,6 +3,20 @@ typora-copy-images-to: vscode-images
 ---
 [TOC]
 
+# 使用教程
+
+* `Ctrl+Shift+P`打开命令面板
+* 设置
+  * `Auto Save`：自动保存——‘delay’   1000ms
+  * `Format on Save`：保存的时候自动格式化
+  * `font size`
+  * `Exclude`
+  * `search.exclude`
+* `help->keyboards inference`：快捷键
+* `terminal`：CTRL+\`
+
+
+
 # 插件
 
 ## LeetCode

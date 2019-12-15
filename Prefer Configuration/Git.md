@@ -45,7 +45,7 @@ typora-copy-images-to: git-images
   ```
   - Windows系统
 
-  [官网下载](https://git-scm.com/downloads)，安装完成后，“Git”->“Git Bash”即可打开
+    [官网下载](https://git-scm.com/downloads)，安装完成后，“Git”->“Git Bash”即可打开
   
 
 * Git基本配置
