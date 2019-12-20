@@ -14,11 +14,12 @@ typora-copy-images-to: pic
       - 数据类型（datatype）：每个表的列都有相应的数据类型，限制（或容许）该列中存储的数据
       - 列（column）：表中的一个字段——所有表都是由一个或多个列组成的
       - 行（row）：表中的一个记录
-        - 表中的数据是按行存储的
+        - 表中的数据是**按行存储**的
         - 所保存的每个记录存储在自己的行内
       - 主键（primary key）：一列（或一组列），其值能够唯一区分表中每个行——订单ID、编号等
         - 任意两行都不具有相同的主键值
         - 每个行都必须具有一个主键值（主键值不允许NULL值）
+        - 可以使用多个列作为主键——所有列值的组合必须是唯一的（但单个列的值可以不唯一）
 - 模式（schema）：关于数据库和表的布局及特性的信息，例如
   - 数据在表中如何存储
   - 数据如何分解
@@ -49,20 +50,90 @@ typora-copy-images-to: pic
     * Microsoft Acess
     * FileMaker
   * 基于客户机-服务器的DBMS
-    * 服务器部分：负责所有数据访问和处理的一个软件，运行在`数据库服务器`上
+    * 服务器部分：负责所有数据访问和处理的一个软件，运行在**数据库服务器**上
     * 客户机：用户通过客户机向服务器提出请求
 
 # 使用MySQL
 
 ## 连接
 
+* MySQL是客户机-服务器DBMS，要求在能执行命令之前能登陆到DBMS；MySQL在内部保存自己的用户列表，并且把每个用户与各种权限关联起来
+* 为了连接到MySQL，需要以下信息
+  * 主机名（计算机名）——如果连接到本地MySQL服务器，`localhost`
+  * 端口：如果使用默认端口3306之外的端口需要指明，否则省略
+  * 一个合法的用户名
+  * 用户命令
+
+## 选择数据库——USE
+
+```mysql
+USE DATABASE;
+```
+
+## 了解数据库和表——SHOW
+
+* 数据库、表、列、用户、权限等的信息被存储在数据库和表中；不过，内部的表一般不直接访问，可以使用命令`SHOW`来显示这些信息
+
+  * 自动增量：主键（订单编号、雇员ID等）需要唯一值，在每行添加到表中时，MySQL可以自动地为每个行分配下一个可用编号
+
+  * 显示可用数据库的列表
+
+    ```mysql
+    SHOW DATABASES;
+    ```
+
+  * 显示一个数据库内的表的列表
+
+    ```mysql
+    SHOW TABLES;
+    ```
+
+  * 显示表内的列——字段名、数据类型、是否允许NULL、键信息、默认值（缺省值）以及其他信息（如字段ID是auto_increment）
+
+    ```mysql
+    SHOW COLUMNS FROM table_name;
+    # 同上
+    DESCRIBE table_name;
+    ```
+    
+  * 显示广泛的服务器状态信息
+  
+    ```mysql
+    SHOW STATUS;
+    ```
+  
+  * 显示创建特定数据库或表的MySQL语句
+  
+    ```mysql
+    SHOW CREATE DATABASE;
+    SHOW CREATE TABLE;
+    ```
+  
+  * 显示授权用户（所有用户或特定用户）的安全权限
+  
+    ```mysql
+    SHOW GRANTS;
+    ```
+  
+  * 显示服务器错误或警告信息
+  
+    ```mysql
+    SHOW ERRORS;
+    SHOW WARNINGS;
+    ```
+  
+  * 进一步了解`SHOW`
+  
+    ```mysql
+    HELP SHOW;
+    ```
 
 
-# 创建和操作表
+# 创建和操纵表
 
-## 创建表
+## 创建表——CREATE TABLE
 
-* CREATE TABLE创建表，必须给出下列2种信息
+* 创建表，必须给出下列2种信息
 
   * 新表的名字
   * 列的名字和定义，用逗号分隔
@@ -71,33 +142,53 @@ typora-copy-images-to: pic
 
   ```MYSQL
   CREATE TABLE table_name IF NOT EXISTS
-    (
-  	  column_name1 int NOT NULL AUTO_INCREMENT,
-        column_name2 char(50) NOT NULL,
-        column_name3 char(50) NULL,
-        column_name4 int NOT NULL DEAULT 1,
-        PRIMARY KEY (column_name1)
-    )ENGINE=InnoDB;
+  (
+  	column_name1 int      NOT NULL AUTO_INCREMENT,
+  	column_name2 char(50) NOT NULL,
+  	column_name3 char(50) NULL,
+  	column_name4 int      NOT NULL DEAULT 1,
+  	PRIMARY KEY (column_name1)
+   )ENGINE=InnoDB;
   ```
   
-  * 表名紧跟在CREATE TABLE关键字后面；实际表定义括在圆括号之中，各列之间用逗号分隔
-  * PRIMARY KEY关键字指定表的主键：主键值必须唯一，只能使用NOT NULL的列
+  * 在创建新表时，指定的表名必须不存在，否则将出错；`IF NOT EXISTS`表示在一个表不存在时创建
+  
+  * 表名紧跟在`CREATE TABLE`关键字后面；实际表定义括在**圆括号之中**，各列之间用逗号分隔
+  
+  * `PRIMARY KEY`关键字指定表的主键：主键值必须唯一，只能使用`NOT NULL`的列
+    
     * 主键使用单个列，则它的值必须唯一
     * 主键使用多个列，则这些列的组合值必须唯一
-  * NULL和NOT NULL
-    * NULL为默认设置，如果不指定，默认该列允许没有值
-    * NOT NULL指该列不接受没有值的行——在插入或更新行时，该列必须有值
-  * AUTO_INCREMENT：本列每当增加一行时自动增量
-    * 每个表只允许一个AUTO_INCREMENT列
+    
+  * `NULL`和`NOT NULL`
+    
+    * `NULL`为默认设置，如果不指定，**默认该列允许没有值**
+    * `NOT NULL`指该列不接受没有值的行——在插入或更新行时，该列必须有值
+    
+  * `AUTO_INCREMENT`：本列每当增加一行时自动增量
+    
+    * 每个表只允许一个`AUTO_INCREMENT`列
+    
     * 本列必须被索引（通过使它成为主键）
-    * last_insert_id()函数可以获得最后一个AUTO_INCREMENT的值
-  * 如果在插入行时没有给出值，MYSQL使用DEAFULT关键字指定此时使用的默认值
+    
+    * `last_insert_id()`函数可以获得最后一个`AUTO_INCREMENT`的值
+    
+      ```mysql
+      SELECT last_insert_id();
+      ```
+    
+  * 如果在插入行时没有给出值，MYSQL使用`DEFAULT`关键字指定此时使用的默认值
     * 与大多数DBMS不一样，MYSQL不允许使用函数作为默认值，只支持常量
-    * 大多数情况下应使用默认值，而不是NULL列，特别是对于计算或数据分组的列
-  * 引擎类型：具体管理和处理数据的内部引擎——CREATE TABLE时该引擎具体创建表，而在使用SELECT语句或进行其他数据库处理时，该引擎在内部处理你的请求，多数情况下，此引擎都隐藏在DBMS内
-    * InnoDB是一个可靠的事物处理引擎，不支持全文本搜索
-    * MEMORY在功能上等同于MyISAM，但由于数据存储在内存（不是磁盘）中，速度很快（特别适合于临时表）
-    * MyISAM是一个性能极高的引擎，支持全文本搜索，但不支持事物处理
+    * 大多数情况下应使用默认值，而不是`NULL`列，特别是对于计算或数据分组的列
+    
+  * 引擎类型：具体管理和处理数据的内部引擎——`CREATE TABLE`时该引擎具体创建表，而在使用`SELECT`语句或进行其他数据库处理时，该引擎在内部处理你的请求，多数情况下，此引擎都隐藏在`DBMS`内
+    
+    * MySQL具有多种引擎，全都能执行建表、查询等命令，但具有不同的功能和特性
+      * 如果忽略`ENGINE=`语句，则使用默认引擎（很可能是`MyISAM`）
+      * `InnoDB`是一个**可靠**的**事物处理引擎**，**不支持全文本搜索**
+      * `MEMORY`在功能上等同于`MyISAM`，但由于数据存储在内存（不是磁盘）中，速度很快（特别**适合于临时表**）
+      * `MyISAM`是一个**性能极高**的引擎，**支持全文本搜索**，但**不支持事物处理**
+    * 引擎类型可以混用，但是**外键不能跨外键**——使用一个引擎的表不能引用具有使用不同引擎的表的外键
   
 * 数据类型
 
@@ -140,9 +231,17 @@ typora-copy-images-to: pic
     |  LONGTEXT   | 0-4294967295字节 |         极大文本数据          |
   
 
-## 更新、删除和重命名表
+## 更新——ALTER
 
-* 更新表：使用ALTER TABLE语句
+> 理想状态下，当表中存储数据以后，该表就不应该再被更新。在表的设计过程中需要花费大量时间来考虑，以便后期不对该表进行大的改动
+
+* 为了更改表结构，必须给出下面的信息
+
+  * 在`ALTER TABLE`之后给出要更改的表名（该表必须存在）
+
+  * 所做更改的列表
+
+* 更新表：使用`ALTER TABLE`语句
 
   * 给表添加一个列
 
@@ -156,7 +255,15 @@ typora-copy-images-to: pic
     ALTER TABLE table_name DROP column column_name
     ```
 
-* 删除表：使用DROP TABLE语句删除整个表
+* 使用`ALTER TABLE`要极为小心，应该在进行改动前做一个完整的备份（模式和数据的备份）
+
+  * 数据库的更改不能撤销
+  * 增加了不需要的列，可能不能删除它们
+  * 删除了不应该删除的列，可能会丢失该列中的所有数据
+
+## 删除表——DROP
+
+* 删除表：使用`DROP TABLE`语句删除整个表
 
   * 删除表没有确认，也不能撤销
 
@@ -166,72 +273,90 @@ typora-copy-images-to: pic
     DROP TABLE table_name
     ```
 
-* 重命名表：使用RENAME TABLE语句可以重命名一个表
+## 重命名表——RENAME
+* 重命名表：使用`RENAME TABLE`语句可以重命名一个表
 
   ```mysql
-  RENAME TABLE table_name TO new_table_name
+  RENAME TABLE table_name1 TO new_table_name1,
+               table_name2 TO new_table_name2,
+               table_name3 TO new_table_name3
   ```
 
-# 数据插入
+# 数据插入——INSERT
 
-* 插入完整的行
-  * 指定表名和被插入到新行中的值使用INSERT插入一个完整的行
+## 插入完整的行
+
+* 指定表名和被插入到新行中的值使用INSERT插入一个完整的行
 
   ```mysql
-  INSERT INTO table_name(column_name1,column_name2,column_name3,...)
+  INSERT INTO       table_name(column_name1,column_name2,column_name3,...)
   VALUES (value1, value2, value3,...)
   ```
 
-  * 在表名后的括号里明确给出列名，省略时默认插入所有列名数值
-    * VALUES以指定的次序匹配指定的列名，不一定按各个列出现在实际表中的次序——优点是即使表的结构改变，INSERT依然能正确运行
-  * INSERT LOW_PRIORITY INTO指示降低INSERT的优先级，同样适用于UPDATE和DELETE语句
-    * 数据库经常被多个客户访问，对处理什么请求以及用什么次序处理进行管理是MySQL的任务
-    * INSERT操作可能很耗时（特别是有很多索引需要更新时），而且可能降低等待处理的SELECT语句的性能
+* 在表名后的括号里明确给出列名，省略时默认插入所有列名数值
+  
+  * VALUES以指定的次序匹配指定的列名，不一定按各个列出现在实际表中的次序——优点是即使表的结构改变，`INSERT`依然能正确运行
+* `INSERT LOW_PRIORITY INTO`指示降低`INSERT`的优先级，同样适用于`UPDATE`和`DELETE`语句
+  
+  * 数据库经常被多个客户访问，对处理什么请求以及用什么次序处理进行管理是MySQL的任务
+  * `INSERT`操作可能很耗时（特别是有很多索引需要更新时），而且可能降低等待处理的SELECT语句的性能
 
-* 插入多个行：单条INSERT语句处理多个插入比使用多条INSERT语句快
+## 插入多个行
+
+* 单条`INSERT`语句处理多个插入比使用多条`INSERT`语句快
+
   ```mysql
   INSERT INTO table_name(column_name1,column_name2,column_name3,...)
   VALUES (value1, value2, value3,...),
-  	   (value1, value2, value3,...),
-         ....;
+	   (value1, value2, value3,...),
+       ....;
   ```
 
-* 插入检索出的数据：将一条SELECT语句的结果插入表中
+## 插入检索出的数据
 
-  ```mysql
-  INSERT INTO table_name1(column_name1,column_name2,column_name3,...)
-  SELECT column_name1,column_name2,column_name3,... from table_name2;
-  ```
+* 将一条`SELECT`语句的结果插入表中
 
-  * 两个表的列名不要求相同，Mysql使用的是列的位置
+```mysql
+INSERT INTO table_name1(column_name1,column_name2,column_name3,...)
+SELECT column_name1,column_name2,column_name3,... from table_name2;
+```
+
+* 两个表的列名不要求相同，Mysql使用的是列的位置
 
 # 更新和删除数据
 
-* 更新数据：使用UPDATE语句更新特定行
+## 更新数据——UPDATE
+
+* 更新数据：使用`UPDATE`语句更新特定行
 
   ```mysql
   UPDATE IGNORE table_name SET column_name1=value1, column2_name2=value2,... WHERE...;
   ```
 
-  * SET命令：将新值赋给被更新的列
+  * `SET`命令：将新值赋给被更新的列
+
   * WHERE子句限制更新哪行
+
   * IGNORE关键字（可不填）
-    * UPDATE语句更新多行，并在更新这些行中的一行或多行时出现一个错误，则整个UPDATE操作取消（错误发生前更新的所有行被恢复到它们原来的值）
-    * 使用IGNORE关键字即使发生错误也继续进行更新
-  * 为了删除某个列的值，可设置它为NULL（假如表定义允许NULL值）
+    * `UPDATE`语句更新多行，并在更新这些行中的一行或多行时出现一个错误，则整个`UPDATE`操作取消（错误发生前更新的所有行被恢复到它们原来的值）
+    * 使用`IGNORE`关键字即使发生错误也继续进行更新
+    
+  * 为了删除某个列的值，可设置它为`NULL`（假如表定义允许`NULL`值）
 
-* 删除数据：使用DELETE语句删除特定行
+## 删除数据——DELETE
 
+* 删除数据：使用`DELETE`语句删除特定行
+
+  ```mysql
+  DELETE FROM table_name WHERE condition;
   ```
-  DELETE FROM table_name WHERE ....;
-  ```
 
-  * DELETE语句从表中删除行，甚至是删除表中所有行，但是DELETE不删除表本身
-  * 更快的删除：如果想从表中删除所有行，不要使用DELETE，可以使用TRUNCATE TABLE语句，它完成相同的工作，但速度更快（TRUNCATE 实际是删除原来的表并重新创建一个表，而不是逐行删除表中的数据）
+  * `DELETE`语句从表中删除行，甚至是删除表中所有行，但是不删除表本身
+  * 更快的删除：如果想从表中删除所有行，不要使用`DELETE`，可以使用`TRUNCATE TABLE`语句，它完成相同的工作，但速度更快（`TRUNCATE` 实际是删除原来的表并重新创建一个表，而不是逐行删除表中的数据）
 
 # 检索数据
 
-## SQL SELECT语句
+## 检索——SELECT
 
 > SELECT：从数据库中选取数据，结果被存储在一个结果表中（称为结果集）
 >
@@ -261,10 +386,11 @@ typora-copy-images-to: pic
 - 注意：
 
   - 查询结果的**数据顺序**没有特殊意义
-  - 多条SQL语句必须以**分号**分隔
-  - SQL语句不区分大小写，但习惯——SQL关键字使用大写，而对所有列和表名使用小写
+  - 多条SQL语句最好以**分号**分隔
+  - SQL语句不区分大小写，但习惯——`SQL`关键字使用大写，而对所有列和表名使用小写
+  - 处理SQL语句时，其中所有空格都被忽略，所以SQL语句可以分成多行
 
-## SQL SELECT DISTINCT语句
+## 检索不同的行——SELECT DISTINCT
 
 > SELECT DISTINCT：返回唯一不同的值
 
@@ -280,7 +406,7 @@ typora-copy-images-to: pic
 
 - DISTINCT关键字应用于**选择的所有列**，而不是紧跟的列（与后面的`DESC`相反）
 
-## SQL LIMIT限制结果
+## 限制结果——LIMIT
 
 > LIMIT子句：返回前几行
 
@@ -299,7 +425,7 @@ typora-copy-images-to: pic
   * 检索出来的第一行为行0——计数从0开始
   * 行数不够时返回能返回的那么多行
 
-## SQL ORDER BY排序检索数据
+## 排序检索数据——ORDER BY
 
 > ORDER BY子句：取一个或多个列的名字，据此对输出进行排序
 
@@ -309,7 +435,7 @@ typora-copy-images-to: pic
   SELECT columns_name1, column_name2 from table ORDER BY column_name
   ```
 
-* 按照多个列排序
+* 按照多个列排序：先根据`column_name1`进行排序，在`column_name1`相同的情况下，再根据`column_name2`进行排序
 
 * 指定排序方向`DESC`、`ASC`
 
@@ -334,7 +460,7 @@ typora-copy-images-to: pic
 
 # 过滤数据
 
-## SQL WHERE子句
+## WHERE子句
 
 - `WHERE`子句：提取那些满足指定的搜索条件的记录
 
@@ -345,6 +471,7 @@ typora-copy-images-to: pic
   ```
 
   - SQL使用**单引号**来环绕文本值（大部分数据库系统也接受双引号）
+  - MySQL在执行匹配时默认**不区分大小写**
   - 在同时使用`ORDER BY`和`WHERE`子句时，应该让`ORDER BY`位于`WHERE`之后，否则将会产生错误
   - `IS NULL`：检查具有`NULL`值的列——`NULL`与字段包含0、空字符串或仅仅包含空格不同
 
@@ -398,7 +525,7 @@ typora-copy-images-to: pic
 ### LIKE操作符
 
 * 通配符（wildcard）：用来匹配值的一部分的特殊字符
-* 百分号（%）通配符：表示任何字符出现任意次数——不能匹配`NULL`
+* 百分号（%）通配符：表示任何字符出现任意次数（**包括0次**）——不能匹配`NULL`
   * M%：模糊查询信息为M开头的
   * %M%：表示查询包含M的所有内容
 * 下划线（_）通配符：只匹配单个字符
@@ -412,6 +539,62 @@ typora-copy-images-to: pic
 * 尽量不要把通配符用在搜索模式的开始处，这样是最慢的
 
 ## 用正则表达式进行搜索
+
+> 正则表达式：用来匹配文本的特殊的串——可以看正则表达式必知必会
+
+### 基本字符匹配
+
+* `REGEXP ‘zxc’`：告诉MySQL：REGEXP后面跟的东西作为正则表达式
+
+* `.`表示一个字符的占位符
+
+* MySQL中的正则表达匹配不区分大小写，为区分大小写，可使用`BINARY`关键字
+
+  ```mysql
+  WHERE column_name REGEXP BINARY 'abc';
+  ```
+
+### 进行OR匹配——|
+
+* |为正则表达式的OR操作符：满足两个匹配之一即可
+
+  ```mysql
+  SELECT column_name 
+  FROM table_name
+  WHERE column_name1 REGEXP '1000|2000';
+  ```
+
+### 匹配几个字符之一
+
+* 通过指定一组用`[]`括起来的字符来完成：`[]`中字符只占一位
+
+  * `[123]`匹配1、2、3中的任一字符
+  * `[^123]`匹配除1、2、3之外的字符
+
+  ```mysql
+  SELECT column_name FROM table_name WHERE column_name1 REGEXP '[123] TON'
+  ```
+
+### 匹配范围
+
+* 简化数字`[123456789]`为`[1-9]`
+* 简化字符`[abcdef]`为`[a-f]`
+
+### 匹配特殊字符（TODO）
+
+
+
+### 匹配字符类（TODO）
+
+### 匹配多个实例（TODO）
+
+### 定位符（TODO）
+
+# 创建计算字段（TODO）
+
+> 计算字段：并不实际存在于数据库表中，是运行时在SELECT语句内创建的
+
+# 使用数据处理函数（TODO）
 
 # 汇总数据
 
@@ -429,7 +612,7 @@ typora-copy-images-to: pic
 
   > MySQL还支持一系列的标准偏差聚集函数，可以自行查阅
 
-### AVG()函数
+## AVG()函数
 
 * `AVG()`通过对表中行数技术并计算特定列值之和，求得该列的平均值
 
@@ -441,7 +624,26 @@ typora-copy-images-to: pic
     SELECT AVG(column_name) AS alias FROM TABLE_NAME
     ```
 
-### COUNT()函数
+## COUNT()函数
+
+* `COUNT()`函数进行计数，确定表中行的数目
+
+  * `COUNT(*)`对表中行的数目进行计数，不管表列中包含的是空值（`NULL`）还是非空值
+
+  * `COUNT(column)`对特定列中具有值的行进行计数，忽略`NULL`值
+
+    ```mysql
+    SELECT COUNT(*) AS column_name 
+    FROM table_name;
+    ```
+
+## MAX()、MIN()函数
+
+* `MAX()、MIN()`返回指定列中的最大值、最小值，忽略`NULL`值
+
+## SUM()函数
+
+* `SUM()`返回指定列值的和，忽略`NULL`值
 
 # 分组数据——GROUP BY
 
@@ -456,39 +658,45 @@ typora-copy-images-to: pic
 
 ## 过滤分组
 
+* 过滤分组：规定包括哪些分组，排除哪些分组
+  * 不能使用`WHERE`，因为`WHERE`过滤指定的是行而不是分组
+  * 使用`HAVING`子句——非常类似于`WHERE`，唯一的差别是`HAVING`过滤组，`WHERE`过滤行
+
+## 分组和排序
+
+## SELECT子句顺序
+
+# 使用子查询
+
+> 子查询（subquery）：嵌套在其他查询中的查询
+
+* 利用子查询进行过滤
+  * 子查询总是从内向外处理
+  * 在`WHERE`子句中使用子查询能够编写出功能很强并且很灵活的SQL语句
+  * 对于能嵌套的子查询的数目没有限制，不过在实际使用时由于性能的限制，不能嵌套太多的子查询
+* 使用子查询作为计算字段
+
+# 连结表
+
+## 关系表
+
+## 为什么要使用联结
+
+## 创建联结
 
 
-# 使用MySQL
 
-## 语法
+# 创建高级连结
 
-- 数据库表：一个数据库通常包含一个或多个表
-  - 每个表有一个名字标识
-  - 表包含带有数据的记录（行）
-- 使用数据库示例
-  - use RUNNOOB：选择数据库
-  - set names utf8：设置使用的字符集
-  - SELECT* FROM Websites：读取数据表的信息
-  - SQL对**大小写不敏感**：SELECT与select是相同的
-  - 大多数数据库系统要求在每条SQL语句的末端使用分号用来分隔每条SQL语句
-  - 在处理SQL语句时，其中所有空格都被忽略——SQL语句可以分成多行，更容易阅读和调试
+# 组合查询
 
-![1558488902914](pic/数据库示例.jpg)
+# 全文本搜索 
 
-- DML和DDL
-  - 数据定义语言（DDL）：创建或删除表格，或者定义索引（键），规定表之间的链接，以及施加表间的约束
-    - CREATE DATABASE：创建新数据库
-    - ALTER DATABASE：修改数据库
-    - CREATE TABLE：创建新表
-    - ALTER TABLE：变更（改变）数据库表
-    - DROP TABLE：删除表
-    - CREATE INDEX：创建索引（搜索键）
-    - DROP INDEX：删除索引
-  - 数据操作语言（DML）：查询和更新指令
-    - SELECT：从数据库表中获取数据
-    - UPDATE：更新数据库表中的数据
-    - DELETE：从数据库表中删除数据
-    - INSERT INTO：向数据库表中插入数据
+# 使用视图
+
+# 使用存储过程
+
+# 使用游标
 
 # 管理事物处理
 
