@@ -5,9 +5,9 @@ typora-copy-images-to: pic
 
 ## 数据库基础
 
-- 数据库（database——DB）：保存有组织的数据的容器
+- 数据库（DataBase——DB）：按照数据结构来组织、存储和管理数据的容器
 - RDBMS（Relational Database Management System）：关系型数据库管理系统
-  - RDBMS 是 SQL 的基础，同样也是所有现代数据库系统的基础，比如 MS SQL Server、IBM DB2、Oracle、MySQL 以及 Microsoft Access。
+  - `RDBMS` 是 SQL 的基础，同样也是所有现代数据库系统的基础，比如 `MS SQL Server`、`IBM DB2`、`Oracle`、`MySQL` 以及 `Microsoft Access`。
   - RDBMS 中的数据存储在被称为**表**的数据库对象中。
     - 表（table）：某种特定类型数据的结构化清单
     - 表是相关的数据项的集合，它由列和行组成。
@@ -666,6 +666,16 @@ SELECT column_name1,column_name2,column_name3,... from table_name2;
 
 ## SELECT子句顺序
 
+|   子句   |        说明        |
+| :------: | :----------------: |
+|  SELECT  | 要返回的列或表达式 |
+|   FROM   |  从中检索数据的表  |
+|  WHERE   |      行级过滤      |
+| GROUP BY |        分组        |
+|  HAVING  |      组级过滤      |
+| ORDER BY |    输出排序顺序    |
+|  LIMIT   |    要检索的行数    |
+
 # 使用子查询
 
 > 子查询（subquery）：嵌套在其他查询中的查询
@@ -676,21 +686,74 @@ SELECT column_name1,column_name2,column_name3,... from table_name2;
   * 对于能嵌套的子查询的数目没有限制，不过在实际使用时由于性能的限制，不能嵌套太多的子查询
 * 使用子查询作为计算字段
 
-# 连结表
+# 联结表
 
 ## 关系表
 
-## 为什么要使用联结
+* 例子——假如有一个包含产品目录的数据库表，其中每种类别的物品占一行，对于每种物品要存储的信息包括产品描述和价格，以及生产该产品的供应商信息；假如有由同一供应商生产的多种物品
+  * 建立两个表，一个存储供应商信息，另一个存储产品信息
+    * 供应商信息不重复，从而不浪费时间和空间
+    * 如果供应商信息变动，可以只更新供应商表中的单个记录，相关表中的数据不用改动
+    * 由于数据无重复，显然数据是一致的，使得处理数据更简单
+* 外键（foreign key）：外键为某个表中的一列，包含另一个表的主键值，定义了两个表之间的关系
+* 可伸缩性（scale）：能够适应不断增加的工作量而不失败。设计良好的数据库或应用程序称之为可伸缩性好
+
+## 为什么要使用联结（join）
+
+* 分解数据为多个表能更有效地存储，更方便地处理，并且具有更大的可伸缩性，需要使用联结检索出数据
+* 联结是一种机制，可以联结多个表返回一组输出，联结在运行时关联表中正确的行
+* 维护引用完整性
+  * 联结不是物理实体，它在实际的数据库表中不存在，由MySQL根据需要建立，存在于查询的执行当中
+  * 在使用关系表时，仅在关系列中插入合法的数据非常重要
 
 ## 创建联结
+
+* 规定要联结的所有表以及它们如何关联即可
+
+  ```mysql
+  SELECT column_name1, column_name2, column_name3 
+  FROM table_name1, table_name2
+  WHERE table_name1.column_name1 = table_name2.column_name1
+  ```
+
+* 完全限定列名：在引用的列可能出现二义性时，必须使用完全限定列名
+
+## 内部联结
+
+* 上述的联结称为等值联结（equijoin），基于两个表之间的相等测试，可以使用稍微不同的语法
+
+  * `INNER JOIN`联结两个表
+  * `ON`表示联结条件
+
+  ```mysql
+  SELECT column_name1, column_name2, column_name3 
+  FROM table_name1 INNER JOIN table_name2
+  ON table_name1.column_name1 = table_name2.column_name1
+  ```
+
+* MySQL在运行时关联指定的每个表以处理联结，这种处理可能是非常耗费资源的，因此应该仔细，不要联结不必要的表。联结的表越多，性能下降约厉害
+
+## 外部联结
+
+* 联结包含了那些在相关表中没有关联行的行，称为外部联结
+* `LEFT OUTER JOIN`
+* `RIGHT OUTER JOIN`
 
 
 
 # 创建高级连结
 
+* 使用表别名
+  * 缩短SQL语句
+  * 允许在单条SELECT语句中多次使用相同的表
+
 # 组合查询
 
 # 全文本搜索 
+
+> 并非所有引擎都支持全文本搜索，`MyISAM`支持全文本搜索，而`InnoDB`不支持全文本搜索
+
+
 
 # 使用视图
 
