@@ -27,15 +27,15 @@ typora-copy-images-to: pic
     * 超平面S称为**分离超平面**（separating hyperplane）
         ![感知机模型](\pic\感知机模型.jpg)
 # 感知机学习策略
-* 数据集的线性可分性：给定一个数据集$T = \{ ({x_1},{y_1}),({x_2},{y_2}),\cdots,({x_N},{y_N})\}$，其中$x_i\in {\bf{x}} ={\Re ^n},y_i\in  {\cal Y}=\{+1,-1\},i=1,2,\cdots,N$，如果存在某个超平面S：$\omega  \cdot x + b=0$能够将数据集的正实例点和负实例点**完全正确**地划分到**超平面**的**两侧**，则称数据集T为**线性可分数据集**（linearly separable data set）
+* 数据集的线性可分性：给定一个数据集$T = \{ (x_1,y_1),(x_2,y_2),\cdots,(x_N,y_N)\}$，其中$x_i\in {\bf{x}} ={\Re ^n},y_i\in  {\cal Y}=\{+1,-1\},i=1,2,\cdots,N$，如果存在某个超平面S：$\omega  \cdot x + b=0$能够将数据集的正实例点和负实例点**完全正确**地划分到**超平面**的**两侧**，则称数据集T为**线性可分数据集**（linearly separable data set）
     * 对所有$y_i=+1$的实例$x_i$，有$\omega  \cdot x + b>0$
     * 对所有$y_i=-1$的实例$x_i$，有$\omega  \cdot x + b<0$
 
 * 感知机学习策略：假设训练数据集是线性可分的
     * 感知机目标：找到一个能够将训练集正实例点和负实例点完全正确分开的分离超平面
     * 损失函数：误分类点到超平面S的**总距离**
-        * 空间${\Re ^n}$中任一点$x_0$到超平面S的距离：$\frac{1}{{\left\| \omega  \right\|}}\left| {\omega  \cdot {x_0} + b} \right|$
-            
+        * 空间${\Re ^n}$中任一点$x_0$到超平面S的距离：$\frac{1}{\left\| \omega  \right\|}\left| {\omega  \cdot {x_0} + b} \right|$
+          
             * $\left\| \omega  \right\|$是$\omega$的$L_2$范数
             
         * 对于误分类的数据$(x_i,y_i)$来说，$- {y_i}(\omega  \cdot {x_i} + b) > 0$成立
@@ -77,8 +77,8 @@ typora-copy-images-to: pic
       \omega  \leftarrow \omega  + \eta {y_i}{x_i}\\
       b \leftarrow b + \eta {y_i}
       \end{array}
-      $$
-    
+  $$
+  
 * 学习算法的直观解释：当一个实例点被误分类，即位于超平面的错误一侧，则调整$\omega,b$的值，使分离超平面向该误分类点的一侧移动，以减少该误分类点与超平面的距离，直至超平面越过该误分类点使其被正确分类
 
 * 感知机学习算法由于采取不同的初值或选取不同的误分类点，解可以不同

@@ -1,32 +1,56 @@
----
-typora-copy-images-to: pic
----
-
 参考：《Python基础教程》——廖雪峰
 
 ​           《Python编程从入门到实践》
 
 [TOC]
 
-# Python如何运行程序
+# Q&A
 
-# Python解释器
+1. JIT技术与PyPy
+
+# Python基本概念
+
+## Python解释器
 
 > 编写Python代码，可以得到以`.py`为扩展名的文本文件，然后需要Python解释器去执行`.py`文件
 >
 > 由于Python语言从规范到解释器都是开源的，所以理论上任何人都可以编写Python解释器来执行Python代码，所以存在多种Python解释器
 
-## CPython
+### CPython
 
-> CPython是官方版本的解释器，是用C语言开发的，在命令行下运行`python`就是启动`CPython`解释器
+> `CPython`是官方版本的解释器，是用C语言开发的，在命令行下运行`python`就是启动`CPython`解释器
 
-## IPython
+### IPython
 
+> `IPython`是基于`CPython`之上的一个交互式解释器，只是在交互方式上有所增强
 
+### PyPy
 
-## PyPy
+> 目标是执行速度——采用`JIT`技术，对Python代码进行动态编译（不是解释），显著提高Python代码的执行速度
+
+### Jython
+
+> 运行在Java平台上的Python解释器，可以直接把Python代码编译成Java字节码执行
+
+### IronPython
+
+> 运行在微软`.Net`平台上的Python解释器，直接把Python代码编译成`.Net`的字节码
+
+## 输入和输出
+
+* 输出：`print('Hello, World')`
+  * 可以接受多个字符串，用`,`隔开，遇到`,`，会输出一个空格
+* 输入：`input()`
+
+## 基本语法
+
+* 以`#`开头的语句是注释
+* 缩进的语句视为代码块
+* Python程序是大小写敏感的
 
 # 变量和简单数据类型
+
+
 
 # Python对象类型
 

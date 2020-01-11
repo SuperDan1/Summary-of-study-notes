@@ -60,7 +60,7 @@ typora-copy-images-to: pic
 * 监督学习利用训练数据集学习一个模型，再用模型对测试样本集进行预测（prediction），分为学习和预测两个过程
   * 给定训练数据集$T = \{ ({x_1},{y_1}),({x_2},{y_2}), \cdots ,({x_N},{y_N})\} $，其中$(x_i,y_i),i=1,2,\cdots,N$称为样本或样本点，${x_i} \in x \subseteq {\Re ^n}$是输入的观测值，称为输入或实例，$y_i\in \cal Y$是输出的观测值，称为输出
   * 学习过程中，学习系统利用给定的训练数据集，通过学习（训练）得到一个模型，表示为条件概率分布$\hat P(Y|X)$ 或决策函数$Y = \hat f(X)$——描述输入与输出随机变量之间的映射关系
-  * 预测过程中，预测系统对于给定的测试样本集中的输入$x_{N+1}$，由模型${y_{N + 1}} = \mathop {\arg \max }\limits_{{y_{N + 1}}} \hat P({y_{N + 1}}|{x_{N + 1}})$或${y_{N + 1}} = \hat f({x_{N + 1}})$给出相应的输出$y_{N+1}$
+  * 预测过程中，预测系统对于给定的测试样本集中的输入$x_{N+1}$，由模型${y_{N + 1} } = \mathop {\arg \max }\limits_{y_{N + 1}} \hat P({y_{N + 1}}|{x_{N + 1}})$或${y_{N + 1}} = \hat f({x_{N + 1}})$给出相应的输出$y_{N+1}$
 
 ![监督学习](pic/监督学习问题-1571835886948.jpg)
 
@@ -189,13 +189,13 @@ typora-copy-images-to: pic
 
   * 训练误差是模型$Y = \hat f(X)$关于训练数据集的平均损失
     $$
-    {R_{emp}}(\hat f) = \frac{1}{N}\sum\limits_{i = 1}^N {L({y_i},f({{\hat x}_i}))}
+    {R_{emp}}(\hat f) = \frac{1}{N}\sum\limits_{i = 1}^N {L(y_i,f({\hat x}_i))}
     $$
     其中，$N$是训练样本容量
 
   * 测试误差是模型$Y = \hat f(X)$关于测试数据集的平均损失
     $$
-    {e_{test}} = \frac{1}{{N'}}\sum\limits_{i = 1}^{N'} {L({y_i},f({{\hat x}_i}))}
+    {e_{test}} = \frac{1}{{N'}}\sum\limits_{i = 1}^{N'} {L({y_i},f({\hat x}_i))}
     $$
     其中，$N'$是测试样本容量
 
@@ -204,7 +204,7 @@ typora-copy-images-to: pic
     * 测试误差就变成了常见的测试测试集上的误差率（error rate）
 
     $$
-    {e_{test}} = \frac{1}{{N'}}\sum\limits_{i = 1}^{N'} {I({y_i} \ne f({{\hat x}_i}))}
+    {e_{test}} = \frac{1}{{N'}}\sum\limits_{i = 1}^{N'} {I({y_i} \ne f({\hat x}_i))}
     $$
 
     其中，$I$是指示函数（indicator function），$I = \left\{ {\begin{array}{*{20}{c}}
@@ -283,7 +283,7 @@ typora-copy-images-to: pic
 
   * 生成方法：由数据学习联合概率分布$P(X,Y)$，然后求出条件概率分布$P(Y|X)$作为预测的模型，即生成模型
     $$
-    P(Y|X) = \frac{{P(X,Y)}}{{P(X)}}
+    P(Y|X) = \frac{P(X,Y)}{P(X)}
     $$
     生成模型表示了给定输入$X$产生输出$Y$的生成关系，典型的生成模型有：朴素贝叶斯法和隐马尔科夫模型
 
@@ -340,14 +340,14 @@ typora-copy-images-to: pic
 
     * 召回率：正类预测正确数目占正类的数目之比
       $$
-      P = \frac{{TP}}{{TP + FN}}
+      P = \frac{TP}{TP + FN}
       $$
 
     * F1值：精确率和召回率的调和平均
       $$
       \begin{array}{l}
-      \frac{2}{{{F_1}}} = \frac{1}{P} + \frac{1}{R}\\
-      {F_1} = \frac{{2TP}}{{2TP + FP + FN}}
+      \frac{2}{F_1} = \frac{1}{P} + \frac{1}{R}\\
+      {F_1} = \frac{2TP}{2TP + FP + FN}
       \end{array}
       $$
       
