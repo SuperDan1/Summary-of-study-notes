@@ -1,7 +1,4 @@
----
-typora-copy-images-to: pic
----
-
+<center><font size=10, color='gray'>第四章 朴素贝叶斯法</font></center>
 [TOC]
 
 > 朴素贝叶斯(naive Bayes)法是基于**贝叶斯定理**与**特征条件独立假设**的分类方法。对于给定的训练数据集，首先基于特征条件独立假设学习输入\输出的联合概率分布;然后基于此模型，对给定的输入x，利用贝叶斯定理求出后验概率最大的输出y。
@@ -29,17 +26,17 @@ typora-copy-images-to: pic
 * 朴素贝叶斯分类时
     * 对给定的输入x，通过学习到的模型计算后验概率分布$P(Y=c_k|X=x)$，将后验概率最大的类作为x的类输出
   $$
-      P(Y = {c_k}|X = x) = \frac{{P(X = x|Y = {c_k})P(Y = {c_k})}}{{\sum\nolimits_k {P(X = x|Y = {c_k})P(Y = {c_k})} }}
+  P(Y = {c_k}|X = x) = \frac{P(X = x|Y = {c_k})P(Y = {c_k})}{\sum\nolimits_j {P(X = x|Y = {c_j})P(Y = {c_j})} }
   $$
   
     * 将上式代入得到
       $$
-  P(Y = {c_k}|X = x) = \frac{{P(Y = {c_k})\prod\nolimits_j {P({X^{(j)}} = {x^{(j)}}|Y = {c_k})} }}{{\sum\nolimits_k {P(Y = {c_k})\prod\nolimits_j {P({X^{(j)}} = {x^{(j)}}|Y = {c_k})} } }}
+  P(Y = c_k|X = x) = \frac{P(Y = c_k)\prod\nolimits_j P(X^{(j)} = x^{(j)}|Y = c_k) } {\sum\nolimits_j P(Y = c_j)\prod\nolimits_l P(X^{(l)} = x^{(l)}|Y = c_j)}  
       $$
     
     * 于是，朴素贝叶斯分类器可表示为
       $$
-      y = f(x) = \mathop {\arg \max }\limits_{{c_k}} \frac{{P(Y = {c_k})\prod\nolimits_j {P({X^{(j)}} = {x^{(j)}}|Y = {c_k})} }}{{\sum\nolimits_k {P(Y = {c_i})\prod\nolimits_j {P({X^{(j)}} = {x^{(j)}}|Y = {c_i})} } }}
+      y = f(x) = \mathop {\arg \max }\limits_{c_k} \frac{P(Y = {c_k})\prod\nolimits_j P(X^{(j)} = x^{(j)}|Y = c_k) } {\sum\nolimits_j P(Y = c_j)\prod\nolimits_l P(X^{(l)} = x^{(l)}|Y = {c_j})} 
       $$
     
     * 注意，分母对于所有比较式都是一样的，所以可以简化为
@@ -75,12 +72,12 @@ typora-copy-images-to: pic
 
   * 先验概率$P(Y=c_k)$的极大似然估计
     $$
-    P(Y = {c_k}) = \frac{{\sum\limits_{i = 1}^N {I({y_i} = {c_k})} }}{N},k=1,2,\cdots,K
+    P(Y = {c_k}) = \frac{\sum\limits_{i = 1}^N I({y_i} = c_k)}{N},k=1,2,\cdots,K
     $$
 
   * 设第j个特征$x^{(j)}$可能取值为$\{ {a_{j1}},{a_{j2}}, \cdots ,{a_{js}}\} $，条件概率$P({x^{(j)}} = {a_{jl}}|Y = {c_k})$的极大似然估计
     $$
-    P({x^{(j)}} = {a_{jl}}|Y = {c_k}) = \frac{{\sum\limits_{i = 1}^N {I(x_i^{(j)} = {a_{jl}},{y_i} = {c_k})} }}{{\sum\limits_{i = 1}^N {I({y_i} = {c_k})} }}\\
+    P(x^{(j)} = a_{jl}|Y = {c_k}) = \frac{\sum\limits_{i = 1}^N I(x_i^{(j)} = a_{jl},{y_i} = {c_k})}{\sum\limits_{i = 1}^N I({y_i} = {c_k})}\\
     j=1,2,\cdots,n;l=1,2,\cdots,S_i;k=1,2,\dots,K
     $$
     式中，${x_i^{(j)}}$是第i个样本的第j个特征；$a_{jl}$是第j个特征可能取的第i个值
@@ -96,8 +93,8 @@ typora-copy-images-to: pic
 
   * 计算先验概率及条件概率
     $$
-    P(Y = {c_k}) = \frac{{\sum\limits_{i = 1}^N {I({y_i} = {c_k})} }}{N},k=1,2,\cdots,K \\
-    P({x^{(j)}} = {a_{jl}}|Y = {c_k}) = \frac{{\sum\limits_{i = 1}^N {I(x_i^{(j)} = {a_{jl}},{y_i} = {c_k})} }}{{\sum\limits_{i = 1}^N {I({y_i} = {c_k})} }}\\
+    P(Y = {c_k}) = \frac{\sum\limits_{i = 1}^N I({y_i} = {c_k})} {N},k=1,2,\cdots,K \\
+    P(x^{(j)} = a_{jl}|Y = {c_k}) = \frac{\sum\limits_{i = 1}^N I(x_i^{(j)} = a_{jl},{y_i} = {c_k})} {\sum\limits_{i = 1}^N I({y_i} = {c_k})} \\
     j=1,2,\cdots,n;l=1,2,\cdots,S_i;k=1,2,\dots,K
     $$
 
@@ -117,7 +114,7 @@ typora-copy-images-to: pic
 
 * 条件概率的贝叶斯估计
   $$
-  {P_\lambda }({X^{(j)}} = {a_{jl}}|Y = {c_k}) = \frac{{\sum\limits_{i = 1}^N {I(x_i^{(j)} = {a_{jl}},{y_i} = {c_k}) + \lambda } }}{{\sum\limits_{i = 1}^N {I({y_i} = {c_k}) + {S_j}\lambda } }}
+  {P_\lambda }(X^{(j)} = a_{jl}|Y = {c_k}) = \frac{\sum\limits_{i = 1}^N I(x_i^{(j)} = {a_{jl}},{y_i} = {c_k}) + \lambda } {\sum\limits_{i = 1}^N I({y_i} = {c_k}) + {S_j}\lambda }
   $$
   式中$\lambda \ge 0$，等价于在随机变量各个取值的频数上赋予一个整数$\lambda$；
 
@@ -128,12 +125,12 @@ typora-copy-images-to: pic
   * 对任何$l=1,2,\cdots,S_j$，$k=1,2,\cdots,K$，
     $$
     \begin{array}{l}
-    {P_\lambda }({X^{(j)}} = {a_{jl}}|Y = {c_k}) > 0\\
-    \sum\limits_{l = 1}^{{S_j}} {P({X^{(j)}} = {a_{jl}}|Y = {c_k}) = 1} 
+    {P_\lambda }(X^{(j)} = a_{jl}|Y = {c_k}) > 0\\
+    \sum\limits_{l = 1}^{S_j} P(X^{(j)} = a_{jl}|Y = {c_k}) = 1 
     \end{array}
     $$
 
 * 先验概率的贝叶斯估计
   $$
-  {P_\lambda }(Y = {c_k}) = \frac{{\sum\limits_{i = 1}^N {I({y_i} = {c_k})}  + \lambda }}{{N + K\lambda }}
+  {P_\lambda }(Y = {c_k}) = \frac{\sum\limits_{i = 1}^N I({y_i} = {c_k})  + \lambda }{N + K\lambda}
   $$

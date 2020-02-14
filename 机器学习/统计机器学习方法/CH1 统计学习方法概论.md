@@ -1,9 +1,6 @@
----
-typora-copy-images-to: pic
----
-
 参考：《统计学习方法》——李航
 
+---
 [TOC]
 
 # 统计学习
@@ -161,8 +158,7 @@ typora-copy-images-to: pic
     $$
     \mathop {\min }\limits_{f \in \cal F} \frac{1}{N}\sum\limits_{i = 1}^N {L({y_i},f({x_i}))}
     $$
-
-           其中$\cal F$是假设空间
+  ​       其中$\cal F$是假设空间
 
     * 例如：极大似然估计（maximum likelihood estimation）就属于经验风险最小化——当模型是条件概率分布，损失函数是对数损失函数时，经验风险最小化就等价于极大似然估计
 
