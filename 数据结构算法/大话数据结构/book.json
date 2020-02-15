@@ -1,7 +1,17 @@
 {
-    "plugins": [
-        "mathjax"
-
-    ]
-
+  "title": "统计学习方法笔记",
+  "author": "SuperDan",
+  "language": "zh-hans",
+  "plugins": [
+    "mathjax-commonhtml",
+    "-fontsettings",
+    "-lunr",
+    "-search",
+    "-sharing"
+  ],
+  "pluginsConfig": {
+    "mathjax-commonhtml": {
+      "defaultScaling": false
+    }
+  }
 }
