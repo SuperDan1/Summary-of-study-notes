@@ -14,7 +14,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+# *.dll
 
 # Fortran module files
 *.mod
@@ -31,4 +31,9 @@
 *.out
 *.app
 
+# pro
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*/Debug/
 */node_modules/

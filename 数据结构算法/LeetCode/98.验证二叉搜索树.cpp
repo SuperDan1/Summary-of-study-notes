@@ -64,26 +64,19 @@ public:
     {
         if (!root)
             return true;
-        return is_func(root, -INT_MAX, INT_MAX);
+        return is_func(root, -UINT_MAX, UINT_MAX);
     }
 
     bool is_func(TreeNode *root, int min_, int max_)
     {
-        if (root->left)
-        {
-            if (root->left->val >= root->val || root->left->val <= min_)
-                return false;
-            else
-                return is_func(root->left, min_, root->val);
-        }
-
-        if (root->right)
-        {
-            if (root->right->val <= root->val || root->right->val >= max_)
-                return false;
-            else
-                return is_func(root->right, root->val, max_);
-        }
+        if (!root)
+            return true;
+        if (root->val >= max_ || root->val <= min_)
+            return false;
+        if (!is_func(root->left, min_, root->val))
+            return false;
+        if (!is_func(root->right, root->val, max_))
+            return false;
         return true;
     }
 };
