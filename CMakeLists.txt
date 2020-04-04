@@ -1,0 +1,39 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+SET(PROJECT_NAME testPulseCompression)
+
+PROJECT(${PROJECT_NAME})
+
+message(STATUS "using 32bits")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+
+SET(MKL_DIR ${PROJECT_SOURCE_DIR}/3rd_party/MKL_2018)
+
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${MKL_DIR}/include)
+LINK_DIRECTORIES(${MKL_DIR}/lib)
+
+FILE(GLOB_RECURSE INCLUDE_LIST "${PROJECT_SOURCE_DIR}/include/*.h")
+FILE(GLOB_RECURSE SRC_LIST "${PROJECT_SOURCE_DIR}/src/*.cpp")
+
+source_group("include" FILES ${INCLUDE_LIST})
+source_group("src" FILES ${SRC_LIST})
+ADD_EXECUTABLE(${PROJECT_NAME} ${INCLUDE_LIST} ${SRC_LIST})
+
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+
+SET(ADDITIONAL_LIBRARIES
+				mkl_intel_c.lib
+				mkl_intel_thread.lib
+				mkl_core.lib
+				libiomp5md.lib
+	)
+SET(ADDITIONAL_LIBRARIES_D
+				mkl_intel_c.lib
+				mkl_intel_thread.lib
+				mkl_core.lib
+				libiomp5md.lib
+	)
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} debug "${ADDITIONAL_LIBRARIES_D}" optimized "${ADDITIONAL_LIBRARIES}")
